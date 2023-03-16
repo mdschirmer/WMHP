@@ -17,14 +17,14 @@ This is what the pipeline looks like:
 Feel free to use for scientific purposes and please acknowledge our work:
 
 Citation for WMH segmentation:<br>
-Schirmer et al. "White matter hyperintensity quantification in large-scale clinical acute ischemic stroke cohorts–The MRI-GENIE study." NeuroImage: Clinical 23 (2019): 101884.
+[1] Schirmer et al. "White matter hyperintensity quantification in large-scale clinical acute ischemic stroke cohorts–The MRI-GENIE study." NeuroImage: Clinical 23 (2019): 101884.
 
 Citation using brain volume estimates:<br>
-Schirmer et al. "White matter hyperintensity quantification in large-scale clinical acute ischemic stroke cohorts–The MRI-GENIE study." NeuroImage: Clinical 23 (2019): 101884.<br>
-Schirmer et al. "Brain volume: an important determinant of functional outcome after acute ischemic stroke." Mayo Clinic Proceedings. Vol. 95. No. 5. Elsevier, 2020.
+[1] Schirmer et al. "White matter hyperintensity quantification in large-scale clinical acute ischemic stroke cohorts–The MRI-GENIE study." NeuroImage: Clinical 23 (2019): 101884.<br>
+[2] Schirmer et al. "Brain volume: an important determinant of functional outcome after acute ischemic stroke." Mayo Clinic Proceedings. Vol. 95. No. 5. Elsevier, 2020.
 
 The atlas included in this pipeline is from our other work found here:<br>
-Schirmer et al. "Spatial signature of white matter hyperintensities in stroke patients." Frontiers in neurology 10 (2019): 208.<br>
+[3] Schirmer et al. "Spatial signature of white matter hyperintensities in stroke patients." Frontiers in neurology 10 (2019): 208.<br>
 https://zenodo.org/record/3379848#.ZBMns9LMLcI
 
 ## Approach
