@@ -9,6 +9,10 @@ http://markus-schirmer.com/artemis_aim_1.html
 See also:
 http://www.resilientbrain.org/mrigenie.html
 
+This is what the pipeline looks like:
+
+![WMH pipeline](wmhp_overview.jpg)
+
 ## Use restriction
 Feel free to use for scientific purposes and please acknowledge our work:
 
