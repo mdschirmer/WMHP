@@ -36,9 +36,13 @@ The project relies on python3 and ANTS (Advanced Normalization ToolS), which nee
 
 This project, although developed with the use of GPUs, can be readily evaluated on CPUs only. Should not take much longer than 1min per patient. 
 
-Within nCerebro, a fixture folder with some additional files need to be created. These need to be downloaded separately from here:
+Within nCerebro, please put the following files:
 
 https://www.dropbox.com/sh/ksjfog2cbl69b6s/AAA-hmRb5TYcnLlKsvczuUZ4a?dl=0
+
+in a folder called fixtures
+
+`nCerebro/fixtures`
 
 ## Usage
 
