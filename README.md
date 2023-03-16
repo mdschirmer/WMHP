@@ -41,7 +41,7 @@ https://www.dropbox.com/sh/ksjfog2cbl69b6s/AAA-hmRb5TYcnLlKsvczuUZ4a?dl=0
 
 ## Usage
 
-> bash wmh_segmentation.sh input_file.nii.gz output_file.nii.gz
+`bash wmh_segmentation.sh input_file.nii.gz output_file.nii.gz`
 
 Results and intermediate files (if kept) will be saved in the output file's directory. 
 
@@ -71,20 +71,20 @@ Log file containing statistics:
 ## Environment variables
 Within the wmhp.sh
 
-### python binary for which all the requirements.txt packages have been installed
-python_bin=python3
+python binary for which all the requirements.txt packages have been installed
+`python_bin=python3`
 
-### setting ANTs variables to wherever they are for you.
-ants_warp_transform=/Packages/ANTs/build/ANTS-build/Examples/WarpImageMultiTransform
-ants_registration_quick=/Packages/ANTs/ANTs/Scripts/antsRegistrationSyNQuick.sh
+setting ANTs variables to wherever they are for you.
+`ants_warp_transform=/Packages/ANTs/build/ANTS-build/Examples/WarpImageMultiTransform`
+`ants_registration_quick=/Packages/ANTs/ANTs/Scripts/antsRegistrationSyNQuick.sh`
 
-### number of CPU cores to use (this is only utilized for part of the code)
-num_threads=4
+number of CPU cores to use (this is only utilized for part of the code)
+`num_threads=4`
 
-### keeping intermediate files for debugging, including registration results, etc.
-keep_intermediates=false
+keeping intermediate files for debugging, including registration results, etc.
+`keep_intermediates=false`
 
-### Optional changes
+Optional changes
 The very last line of the code in whmp.sh specifies the viewer command. This can be modified to use the viewer of your choice with the appropriate parameters and allows you to just copy and paste the line to look at the results.
 
-> echo "rview ${raw_img} ${wmh_seg_file} -scontour -res 3 -xy"
+`echo "rview ${raw_img} ${wmh_seg_file} -scontour -res 3 -xy"`
