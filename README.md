@@ -46,7 +46,7 @@ in a folder called fixtures
 
 ## Usage
 
-`bash wmh_segmentation.sh input_file.nii.gz output_file.nii.gz`
+`bash wmhp.sh input_file.nii.gz output_file.nii.gz`
 
 Results and intermediate files (if kept) will be saved in the output file's directory. 
 
