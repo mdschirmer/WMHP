@@ -5,9 +5,10 @@ set -e
 # Setup environment 
 ######################################
 
-python_bin=python3
+python_bin=/python3
 ants_warp_transform=/Packages/ANTs/build/ANTS-build/Examples/WarpImageMultiTransform
 ants_registration_quick=/Packages/ANTs/ANTs/Scripts/antsRegistrationSyNQuick.sh
+
 
 num_threads=4
 
@@ -41,8 +42,11 @@ echo ""
 
 if [ ! -d ${outdir} ]; then 
 	echo "Creating folder structure."
-	mkdir -p ${outdir}
+	mkdir -p ${outdir};
 fi
+
+
+#if it does exist as user if they want to run again 
 
 wmh_seg_file=${outfile}
 if [ ! -f ${wmh_seg_file} ]; then
@@ -51,10 +55,33 @@ if [ ! -f ${wmh_seg_file} ]; then
 		echo "File ${raw_img} not found. Exiting."
 		exit
 	fi
+
 	if [ ! -d ${outdir}/reg ]; then 
 		echo "Creating folder structure."
 		mkdir -p ${outdir}/reg
 	fi
+fi
+
+if [ -f ${wmh_seg_file} ]; then
+
+	echo "WMH has been run previously. Check ${wmh_seg_file}."
+	echo "Would you like to run again anyway [Y/N]?"
+	read input
+	str="Y"
+
+	if [ "$input" == "$str" ]; then
+
+		outfile=rerun_${outfile}
+		wmh_seg_file=${outfile}
+		out_base=$(basename ${outfile} | awk -F'.nii.gz' '{print $1}')
+		outdir=$(dirname ${outfile})
+	else
+		exit
+	fi
+
+fi
+
+if [[ ! -f ${wmh_seg_file} || "$input" == "$str" ]]; then
 
 	# Brain extraction with NeuronBE
 	echo "Executing brain extraction."
@@ -109,9 +136,12 @@ if [ ! -f ${wmh_seg_file} ]; then
 	# Binarize image
 	cmd="${python_bin} ${WMHP_folder}/tools.py binarize ${outdir}/${out_base}_wmh_in_subject.nii.gz ${outfile} 0.5 ${outdir}/${out_base}_stats.log WMH_volume"
 	echo ${cmd}; eval ${cmd};
-else
-	echo "WMH has been run previously. Check ${wmh_seg_file}."
 fi
+
+# else
+# 	echo "WMH has been run previously. Check ${wmh_seg_file}." 
+# fi
+
 
 # Cleaning up if requested
 if ! ${keep_intermediates}; then
@@ -151,4 +181,4 @@ fi
 
 echo "-----"
 echo "Done. To look at results use e.g."
-echo "rview ${raw_img} ${wmh_seg_file} -scontour -res 3 -xy"
+echo "fsleyes ${raw_img} ${wmh_seg_file} -scontour -res 3 -xy"
