@@ -5,10 +5,9 @@ set -e
 # Setup environment 
 ######################################
 
-python_bin=/python3
+python_bin=python3
 ants_warp_transform=/Packages/ANTs/build/ANTS-build/Examples/WarpImageMultiTransform
 ants_registration_quick=/Packages/ANTs/ANTs/Scripts/antsRegistrationSyNQuick.sh
-
 
 num_threads=4
 
@@ -34,24 +33,16 @@ raw_img=$1
 # get base img name to use for outputs
 outfile=$2
 out_base=$(basename ${outfile} | awk -F'.nii.gz' '{print $1}')
-outdir=$(dirname ${outfile})
-
+outdir=$(echo $outfile | awk -F'.nii.gz' '{print $1}')
 echo ""
 echo "Evaluating ${raw_img} with output in folder ${outdir}"
 echo ""
 
-if [ ! -d ${outdir} ]; then 
-	echo "Creating folder structure."
-	mkdir -p ${outdir};
-fi
-
-
-#if it does exist as user if they want to run again 
-
+# check if it the script has been run before by checking if files exist
 wmh_seg_file=${outfile}
-if [ ! -f ${wmh_seg_file} ]; then
+if [ ! -d ${outdir} ]; then
 	# check if file and folder structure exists
-	if [ ! -f ${raw_img} ]; then
+	if  [ ! "./${raw_img}" ] ; then
 		echo "File ${raw_img} not found. Exiting."
 		exit
 	fi
@@ -60,28 +51,35 @@ if [ ! -f ${wmh_seg_file} ]; then
 		echo "Creating folder structure."
 		mkdir -p ${outdir}/reg
 	fi
-fi
+	#creates new folder for output files 
+	echo "Creating folder structure."
+	mkdir -p ${outdir};
 
-if [ -f ${wmh_seg_file} ]; then
+else
 
 	echo "WMH has been run previously. Check ${wmh_seg_file}."
 	echo "Would you like to run again anyway [Y/N]?"
 	read input
-	str="Y"
+	str='Y'
 
 	if [ "$input" == "$str" ]; then
+		# check if file and folder structure exists
+		if [ ! "./${raw_img}" ]; then
+			echo "File ${raw_img} not found. Exiting."
+			exit
+		fi
 
-		outfile=rerun_${outfile}
-		wmh_seg_file=${outfile}
-		out_base=$(basename ${outfile} | awk -F'.nii.gz' '{print $1}')
-		outdir=$(dirname ${outfile})
+		if [ ! -d ${outdir}/reg ]; then 
+			echo "Creating folder structure."
+			mkdir -p ${outdir}/reg
+		fi
 	else
 		exit
 	fi
-
 fi
 
-if [[ ! -f ${wmh_seg_file} || "$input" == "$str" ]]; then
+# runs script if files dont exist or if they do exist and user enters "Y" to continue
+if [[ ! -f ${outdir} || "$input" == "$str" ]]; then
 
 	# Brain extraction with NeuronBE
 	echo "Executing brain extraction."
@@ -94,6 +92,7 @@ if [[ ! -f ${wmh_seg_file} || "$input" == "$str" ]]; then
 		# extract gmwm volume info
 		cmd="${python_bin} ${WMHP_folder}/tools.py binarize ${outdir}/${out_base}_gmwm_seg.nii.gz None 0.5 ${outdir}/${out_base}_stats.log GMWM_volume"
 		echo ${cmd}; eval ${cmd};
+
 	else
 		echo "Brain extraction has been run previously. Using ${outfile}."
 	fi
@@ -113,6 +112,7 @@ if [[ ! -f ${wmh_seg_file} || "$input" == "$str" ]]; then
 		# Warp subject in atlas image to original atlas space in which nCerebro was trained
 		cmd="${ants_warp_transform} 3 ${outdir}/${out_base}_in_atlas.nii.gz ${outdir}/${out_base}_in_orig_atlas.nii.gz -R ${cerebro_fixtures_folder}/iso_flair_template_intres_brain.nii.gz ${cerebro_fixtures_folder}/new_to_old0GenericAffine.mat"
 		echo ${cmd}; eval ${cmd};
+
 	else
 		echo "Registration has been run previously. Using ${outfile}."
 	fi
@@ -124,24 +124,19 @@ if [[ ! -f ${wmh_seg_file} || "$input" == "$str" ]]; then
 
 	cmd="${python_bin} -u ${nCerebro_bin} ${infile} ${outdir}/${out_base}_wmh_in_orig_atlas.nii.gz"
 	echo ${cmd}; eval ${cmd};
-
+	
 	# Warp subject in orig atlas image to atlas space using warp
 	cmd="${ants_warp_transform} 3 ${outdir}/${out_base}_wmh_in_orig_atlas.nii.gz ${outdir}/${out_base}_wmh_in_atlas.nii.gz -R ${outdir}/${out_base}_in_atlas.nii.gz -i ${cerebro_fixtures_folder}/new_to_old0GenericAffine.mat"
 	echo ${cmd}; eval ${cmd};
-
+	
 	# Warp wmh seg to upsampled img space using warp
 	cmd="${ants_warp_transform} 3 ${outdir}/${out_base}_wmh_in_atlas.nii.gz ${outdir}/${out_base}_wmh_in_subject.nii.gz -R ${outdir}/${out_base}_brain_matchwm.nii.gz -i ${outdir}/reg/${out_base}_brain_matchwm_in_atlas_0GenericAffine.mat"
 	echo ${cmd}; eval ${cmd};
-
+	
 	# Binarize image
 	cmd="${python_bin} ${WMHP_folder}/tools.py binarize ${outdir}/${out_base}_wmh_in_subject.nii.gz ${outfile} 0.5 ${outdir}/${out_base}_stats.log WMH_volume"
 	echo ${cmd}; eval ${cmd};
 fi
-
-# else
-# 	echo "WMH has been run previously. Check ${wmh_seg_file}." 
-# fi
-
 
 # Cleaning up if requested
 if ! ${keep_intermediates}; then
@@ -181,4 +176,4 @@ fi
 
 echo "-----"
 echo "Done. To look at results use e.g."
-echo "fsleyes ${raw_img} ${wmh_seg_file} -scontour -res 3 -xy"
+echo "fsleyes ${raw_img} ${wmh_seg_file}"
