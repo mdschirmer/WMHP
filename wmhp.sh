@@ -51,6 +51,7 @@ if [ ! -d ${outdir} ]; then
 		echo "Creating folder structure."
 		mkdir -p ${outdir}/reg
 	fi
+
 	#creates new folder for output files 
 	echo "Creating folder structure."
 	mkdir -p ${outdir};
@@ -63,6 +64,12 @@ else
 	str='Y'
 
 	if [ "$input" == "$str" ]; then
+
+		#deletes and recreates empty folder for new files from rerun
+		rm -r ${outdir}
+		echo "Creating folder structure."
+		mkdir -p ${outdir};
+		
 		# check if file and folder structure exists
 		if [ ! "./${raw_img}" ]; then
 			echo "File ${raw_img} not found. Exiting."
@@ -73,6 +80,7 @@ else
 			echo "Creating folder structure."
 			mkdir -p ${outdir}/reg
 		fi
+
 	else
 		exit
 	fi
