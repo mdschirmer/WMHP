@@ -38,7 +38,7 @@ echo ""
 echo "Evaluating ${raw_img} with output in folder ${outdir}"
 echo ""
 
-# check if it the script has been run before by checking if files exist
+# check if it the script has been run before by checking if folder exists
 wmh_seg_file=${outfile}
 if [ ! -d ${outdir} ]; then
 	# check if file and folder structure exists
@@ -65,11 +65,11 @@ else
 
 	if [ "$input" == "$str" ]; then
 
-		#deletes and recreates empty folder for new files from rerun
+		#deletes duplicated folder/files and recreates an empty folder for new files to go into from rerun
 		rm -r ${outdir}
 		echo "Creating folder structure."
 		mkdir -p ${outdir};
-		
+
 		# check if file and folder structure exists
 		if [ ! "./${raw_img}" ]; then
 			echo "File ${raw_img} not found. Exiting."
@@ -86,7 +86,7 @@ else
 	fi
 fi
 
-# runs script if files dont exist or if they do exist and user enters "Y" to continue
+# runs script if directory doesn't exist or if it does exist and user enters "Y" to continue
 if [[ ! -f ${outdir} || "$input" == "$str" ]]; then
 
 	# Brain extraction with NeuronBE
