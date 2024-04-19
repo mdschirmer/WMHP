@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import sys
+import os
 import inspect
 
 import numpy as np
@@ -10,6 +11,7 @@ import scipy.ndimage as sn
 import scipy.ndimage.interpolation as sni
 import pickle
 import pdb
+import csv
 
 def upsample(niiFileName, upsampledFile, zoom_values_file='upsampling_log.pickle', isotrop_res=True, upsample_factor=None, polynomial='3'):
     """
@@ -169,7 +171,7 @@ def downsample(niiFileName, downsampled_file, zoom_values_file='upsampling_log.p
     return (newNii)
 
 
-def binarize(infile, outfile, threshold, infofile=None, name=None):
+def binarize(infile, outfile, threshold, infofile=None, name=None, filename=None):
 
     # load file
     nii = nib.load(infile)
@@ -186,8 +188,22 @@ def binarize(infile, outfile, threshold, infofile=None, name=None):
     if infofile is not None:
         voxel_size = np.prod(np.asarray(nii.header.get_zooms()).astype(float))
         volume=np.sum(vol)*voxel_size
-        with open(infofile, 'a') as fid:
-            fid.write('%s: %f \n' %(name, volume))
+        # read file
+        with open(infofile, 'r') as file:
+            csv_reader = csv.DictReader(file)
+            data = [row for row in csv_reader]
+            if len(data)==0:
+                data = {}
+                if filename is not None:
+                    data['File'] = filename
+            else:
+                data = data[0]
+        # add new info
+        with open(infofile, 'w') as fid:
+            data[name] = volume
+            writer = csv.DictWriter(fid, fieldnames=data.keys())
+            writer.writeheader()
+            writer.writerows([data])
 
     return (newNii)
 
