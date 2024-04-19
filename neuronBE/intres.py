@@ -189,8 +189,19 @@ def main(argv):
 	img, norm = rescale(brain, mask=mask)
 
 	infofile=outfile.replace('nii.gz','')+'log'
-	with open(infofile, 'a') as fid:
-		fid.write('Rescaling factor: %f' %norm)
+	with open(infofile, 'r') as file:
+		csv_reader = csv.DictReader(file)
+		data = [row for row in csv_reader]
+		if len(data)==0:
+			data = {}
+		else:
+			data = data[0]
+	# add new info
+	with open(infofile, 'w') as fid:
+		data["Rescaling_factor"] = norm
+		writer = csv.DictWriter(fid, fieldnames=data.keys())
+		writer.writeheader()
+		writer.writerows([data])
 
 	#############
 	# save image
