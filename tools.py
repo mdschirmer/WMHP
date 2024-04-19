@@ -191,13 +191,17 @@ def binarize(infile, outfile, threshold, infofile=None, name=None, filename=None
         # read file
         with open(infofile, 'r') as file:
             csv_reader = csv.DictReader(file)
-            data = [row for row in csv_reader]
-            if len(data)==0:
-                data = {}
-                if filename is not None:
-                    data['File'] = filename
+            old_data = [row for row in csv_reader]
+            if len(old_data)==0:
+                old_data = {}
             else:
-                data = data[0]
+                old_data = old_data[0]
+
+            data = {}
+            if (filename is not None) and 'File' not in data.keys():
+                data['File'] = filename
+            data.update(old_data)
+            
         # add new info
         with open(infofile, 'w') as fid:
             data[name] = volume
