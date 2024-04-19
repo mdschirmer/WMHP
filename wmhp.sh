@@ -62,9 +62,10 @@ if [ ! -f ${wmh_seg_file} ] || [ ${force_overwrite} = true ]; then
 
 	# if force overwrite is requested, make sure log file is deleted if it exists
 	logfile=${outdir}/${out_base}_stats.log
-	if [ -f ${logfile} ]; then
+	if [ -f ${logfile} ] && [ ${force_overwrite} = true ]; then
 		rm ${logfile}
 	fi
+	touch ${logfile}
 
 	# Brain extraction with NeuronBE
 	echo "Executing brain extraction."
