@@ -424,7 +424,7 @@ def main(argv):
 	brain[brain!=0] = brain[brain!=0] - np.min(brain)
 
 	# intensity normalize
-	intres_img, norm = intres.rescale(brain, mask=mask)
+	intres_img, norm = intres.rescale(brain, mask=mask, logfile=log_file)
 
 	if (gmwm_file is not None) or (updated_mask_file is not None):
 		# get grey/white matter mask

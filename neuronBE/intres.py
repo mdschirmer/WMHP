@@ -32,6 +32,7 @@ import os
 import numpy as np
 import nibabel as nib
 import warnings
+import csv
 
 # import matplotlib.pyplot as plt
 
@@ -127,7 +128,7 @@ def mean_shift_mode_finder(data, sigma=None, n_replicates=10, replication_method
 # Main method
 #=============================================
 
-def rescale(img, mask=None, new_intensity=0.75, mode=None):
+def rescale(img, mask=None, new_intensity=0.75, mode=None, logfile=None):
 	#############
 	# normalise max to new_intensity
 	#############
@@ -151,6 +152,22 @@ def rescale(img, mask=None, new_intensity=0.75, mode=None):
 
 	# rescale intensity
 	img = img * new_intensity/float(norm)
+
+	if logfile is not None:
+		# read logfile
+		with open(logfile, 'r') as file:
+			csv_reader = csv.DictReader(file)
+			data = [row for row in csv_reader]
+			if len(data)==0:
+				data = {}
+			else:
+				data = data[0]
+		# add new info
+		with open(logfile, 'w') as fid:
+			data["Rescaling_factor"] = norm
+			writer = csv.DictWriter(fid, fieldnames=data.keys())
+			writer.writeheader()
+			writer.writerows([data])
 
 	return img, norm
 
@@ -186,22 +203,8 @@ def main(argv):
 	#############
 	# rescale
 	#############
-	img, norm = rescale(brain, mask=mask)
-
 	infofile=outfile.replace('nii.gz','')+'log'
-	with open(infofile, 'r') as file:
-		csv_reader = csv.DictReader(file)
-		data = [row for row in csv_reader]
-		if len(data)==0:
-			data = {}
-		else:
-			data = data[0]
-	# add new info
-	with open(infofile, 'w') as fid:
-		data["Rescaling_factor"] = norm
-		writer = csv.DictWriter(fid, fieldnames=data.keys())
-		writer.writeheader()
-		writer.writerows([data])
+	img, norm = rescale(brain, mask=mask, logfile=infofile)
 
 	#############
 	# save image
