@@ -9,10 +9,14 @@ python_bin=python3
 ants_warp_transform=/Packages/ANTs/build/ANTS-build/Examples/WarpImageMultiTransform
 ants_registration_quick=/Packages/ANTs/ANTs/Scripts/antsRegistrationSyNQuick.sh
 
-num_threads=4
+num_threads=20
+
+# force overwrite existing files
+# CAUTION! This will overwrite the existing output files if they already exist, as specificed in the naming convention.
+force_overwrite=false
 
 # intended for debugging
-keep_intermediates=true
+keep_intermediates=false
 
 # These environment variables should be all set if using the vanilla version of the algorithm
 WMHP_folder=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
@@ -45,7 +49,7 @@ if [ ! -d ${outdir} ]; then
 fi
 
 wmh_seg_file=${outfile}
-if [ ! -f ${wmh_seg_file} ]; then
+if [ ! -f ${wmh_seg_file} ] || [ ${force_overwrite} = true ]; then
 	# check if file and folder structure exists
 	if [ ! -f ${raw_img} ]; then
 		echo "File ${raw_img} not found. Exiting."
@@ -56,16 +60,22 @@ if [ ! -f ${wmh_seg_file} ]; then
 		mkdir -p ${outdir}/reg
 	fi
 
+	# if force overwrite is requested, make sure log file is deleted if it exists
+	logfile=${outdir}/${out_base}_stats.log
+	if [ -f ${logfile} ]; then
+		rm ${logfile}
+	fi
+
 	# Brain extraction with NeuronBE
 	echo "Executing brain extraction."
 	infile=${raw_img}
 	outfile=${outdir}/${out_base}_brain_matchwm.nii.gz
-	if [ ! -f ${outfile} ]; then
-		cmd="${python_bin} -u ${neuronBE_bin} -i ${infile} -o ${outdir}/${out_base}_brainmask_02.nii.gz -b ${outdir}/${out_base}_brain.nii.gz -n ${outfile} -g ${outdir}/${out_base}_gmwm_seg.nii.gz -r ${outdir}/${out_base}_brainmask_01.nii.gz -l ${outdir}/${out_base}_stats.log"
+	if [ ! -f ${outfile} ]  || [ ${force_overwrite} = true ]; then
+		cmd="${python_bin} -u ${neuronBE_bin} -i ${infile} -o ${outdir}/${out_base}_brainmask_02.nii.gz -b ${outdir}/${out_base}_brain.nii.gz -n ${outfile} -g ${outdir}/${out_base}_gmwm_seg.nii.gz -r ${outdir}/${out_base}_brainmask_01.nii.gz -l ${logfile}"
 		echo ${cmd}; eval ${cmd};
 
 		# extract gmwm volume info
-		cmd="${python_bin} ${WMHP_folder}/tools.py binarize ${outdir}/${out_base}_gmwm_seg.nii.gz None 0.5 ${outdir}/${out_base}_stats.log GMWM_volume"
+		cmd="${python_bin} ${WMHP_folder}/tools.py binarize ${outdir}/${out_base}_gmwm_seg.nii.gz None 0.5 ${logfile} GMWM_volume ${raw_img}"
 		echo ${cmd}; eval ${cmd};
 	else
 		echo "Brain extraction has been run previously. Using ${outfile}."
@@ -75,7 +85,7 @@ if [ ! -f ${wmh_seg_file} ]; then
 	echo "Running registration."
 	infile=${outfile}
 	outfile=${outdir}/${out_base}_in_orig_atlas.nii.gz
-	if [ ! -f ${outfile} ]; then
+	if [ ! -f ${outfile} ]  || [ ${force_overwrite} = true ]; then
 		cmd="${ants_registration_quick} -d 3 -f ${atlas} -m ${infile} -t a -r 32 -n ${num_threads} -o ${outdir}/reg/${out_base}_brain_matchwm_in_atlas_"
 		echo ${cmd}; eval ${cmd};
 
@@ -107,7 +117,7 @@ if [ ! -f ${wmh_seg_file} ]; then
 	echo ${cmd}; eval ${cmd};
 
 	# Binarize image
-	cmd="${python_bin} ${WMHP_folder}/tools.py binarize ${outdir}/${out_base}_wmh_in_subject.nii.gz ${outfile} 0.5 ${outdir}/${out_base}_stats.log WMH_volume"
+	cmd="${python_bin} ${WMHP_folder}/tools.py binarize ${outdir}/${out_base}_wmh_in_subject.nii.gz ${outfile} 0.5 ${logfile} WMH_volume"
 	echo ${cmd}; eval ${cmd};
 else
 	echo "WMH has been run previously. Check ${wmh_seg_file}."
@@ -152,3 +162,5 @@ fi
 echo "-----"
 echo "Done. To look at results use e.g."
 echo "rview ${raw_img} ${wmh_seg_file} -scontour -res 3 -xy"
+echo "or"
+echo "fsleyes ${raw_img} ${wmh_seg_file}"

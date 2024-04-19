@@ -44,6 +44,8 @@ in a folder called fixtures
 
 `nCerebro/fixtures`
 
+If you want to use the viewing commands offered at the end of the script, you will either need rview or fsleyes. See also below under Environment variables.
+
 ## Usage
 
 `bash wmhp.sh input_file.nii.gz output_file.nii.gz`
@@ -85,6 +87,9 @@ setting ANTs variables to wherever they are for you.  <br>
 
 number of CPU cores to use (this is only utilized for part of the code)  <br>
 `num_threads=4`
+
+force overwrite all output files. Only set this to true if you want the algorithm to redo the work it had already done. Prior analysis results will be overwritten/lost.  <br>
+`force_overwrite=false`
 
 keeping intermediate files for debugging, including registration results, etc.  <br>
 `keep_intermediates=false`
