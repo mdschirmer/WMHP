@@ -46,6 +46,10 @@ in a folder called fixtures
 
 If you want to use the viewing commands offered at the end of the script, you will either need rview or fsleyes. See also below under Environment variables.
 
+## Data
+
+The pipeline requires NIFTI files as input, specifically .nii.gz. If you are working with dicom files, I recommend to check out dcm2niix to convert your dicom images to nifti.
+
 ## Usage
 
 `bash wmhp.sh input_file.nii.gz output_file.nii.gz`
