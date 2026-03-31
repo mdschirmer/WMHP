@@ -41,9 +41,22 @@ The atlas included in this pipeline is from our other work found here:
 # Install dependencies
 pip install numpy nibabel scipy scikit-image antspyx
 
+# Or using the requirements file
+pip install -r requirements.txt
+
 # FreeSurfer must be installed for SynthSeg
 # ANTs must be installed for registration
 ```
+
+This project, although developed with the use of GPUs, can be readily evaluated on CPUs only. Should not take much longer than 1 min per patient.
+
+## Downloads
+
+Within the folder nCerebro, please put the following files in a folder called `fixtures`:
+
+https://www.dropbox.com/sh/ksjfog2cbl69b6s/AAA-hmRb5TYcnLlKsvczuUZ4a?dl=0
+
+→ `nCerebro/fixtures`
 
 ## Data
 
