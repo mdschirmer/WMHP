@@ -23,10 +23,10 @@ Pipeline:
 Author: MDS
 Organization: MGH/HMS
 Contact: mschirmer1@mgh.harvard.edu
-Version: 1.3.0
+Version: 0.3.0
 Date: 2025-01-22
 
-Changes in 1.3.0:
+Changes in 0.3.0:
     - N4 pass 2 now uses GMWM mask (more robust for high-res images)
     - Ventricle refinement now uses probabilistic Gaussian classification
     - Tissue distributions estimated from normal-appearing tissue (excludes lesions)
